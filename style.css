@@ -1,0 +1,336 @@
+<script setup lang="ts">
+import AppLayout from '@/layouts/student/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
+import { Head, useForm, router } from '@inertiajs/vue3';
+import PlaceholderPattern from '../../components/PlaceholderPattern.vue';
+import { ref, computed } from 'vue'
+import DeleteModal from '@/components/modals/student/customDelete.vue';
+import InstructionModal from '@/components/modals/student/requestModal.vue';
+
+import LogoImage from '@/assets/img/logo/profile-icon-design-free-vector.jpg';
+
+import { ElMessage } from 'element-plus';
+// Delete modal
+const showDeleteModalFlag = ref(false);
+const selectedId = ref<number | null>(null);
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'My ID Requests',
+        href: '/student/Requestid',
+    },
+];
+
+const props = defineProps<{
+    students: any[];
+}>();
+const form = useForm({
+    name: '',
+    studentid_no: '',
+    course: '',
+    year: '',
+    student_phone: '',
+    student_address: '',
+    guardian_name: '',
+    guardian_address: '',
+    guardian_number: '',
+    guarstatusdian_name: '',
+    avatar: '',
+    signature: '',
+
+});
+
+
+
+function showDeleteModal(id: number) {
+    selectedId.value = id;
+    showDeleteModalFlag.value = true;
+}
+function confirmDelete() {
+    if (selectedId.value !== null) {
+        form.delete(route('student.Requestid.destroy', selectedId.value), {
+            preserveScroll: true,
+        });
+        ElMessage.success("User Account Deleted Successfully!");
+        showDeleteModalFlag.value = false;
+        selectedId.value = null;
+    }
+}
+function cancelDelete() {
+    showDeleteModalFlag.value = false;
+    selectedId.value = null;
+}
+
+</script>
+
+<template>
+
+    <Head title="My ID Requests" />
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <!-- Modal -->
+        <DeleteModal :visible="showDeleteModalFlag" @confirmDelete="confirmDelete" @cancelDelete="cancelDelete" />
+        <InstructionModal />
+
+        <div v-for="studentRequest in props.students" :key="studentRequest.id"
+            class="max-w-2xl mx-auto mt-8 mb-8 bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <!-- ============================= -->
+            <!-- COVER PHOTO -->
+            <!-- ============================= -->
+            <div class="h-36 sm:h-44 bg-gradient-to-r from-blue-600 to-blue-400 relative">
+                <img src="https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&w=1200&q=80"
+                    alt="Cover" class="w-full h-full object-cover" />
+
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-black/10"></div>
+            </div>
+
+            <!-- ============================= -->
+            <!-- PROFILE CONTENT -->
+            <!-- ============================= -->
+            <div class="px-5 sm:px-8 pb-6">
+
+                <!-- ============================= -->
+                <!-- AVATAR -->
+                <!-- ============================= -->
+                <div class="relative -mt-16 sm:-mt-20 mb-3">
+
+                    <!-- Avatar -->
+                    <div
+                        class="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-900 bg-white dark:bg-gray-800 overflow-visible shadow-md transition-colors duration-300">
+                        <img :src="studentRequest.avatar ? '/storage/' + studentRequest.avatar : LogoImage"
+                            alt="Student Avatar" class="w-full h-full object-cover rounded-full" />
+
+                        <!-- Online Indicator -->
+                        <span
+                            class="absolute top-1 right-2 block w-4 h-4 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-900"></span>
+                    </div>
+                </div>
+
+                <!-- ============================= -->
+                <!-- NAME + EMAIL -->
+                <!-- ============================= -->
+                <div class="mb-5">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ studentRequest?.student_name }}
+                    </h2>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {{ studentRequest?.email }}
+                    </p>
+                </div>
+
+                <!-- ============================= -->
+                <!-- STUDENT INFORMATION -->
+                <!-- ============================= -->
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-5">
+
+                    <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">
+                        Student Information
+                    </h3>
+                    <!-- ============================= -->
+                    <!-- INFORMATION GRID -->
+                    <!-- ============================= -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <!-- ============================= -->
+                        <!-- STUDENT ID NUMBER -->
+                        <!-- ============================= -->
+                        <div
+                            class="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                            <!-- Icon -->
+                            <div
+                                class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 7a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 11c-3.314 0-6 2.239-6 5v1h12v-1c0-2.761-2.686-5-6-5z" />
+                                </svg>
+                            </div>
+
+                            <!-- Text -->
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    Student ID No.
+                                </p>
+
+                                <p class="font-semibold text-gray-900 dark:text-white break-words">
+                                    {{ studentRequest?.studentid_no }}
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <!-- ============================= -->
+                        <!-- COURSE & YEAR -->
+                        <!-- ============================= -->
+                        <div
+                            class="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                            <!-- Icon -->
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 14l9-5-9-5-9 5 9 5z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 14v7" />
+                                </svg>
+                            </div>
+
+                            <!-- Text -->
+                            <div class="min-w-0">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    Course & Year
+                                </p>
+
+                                <p class="font-semibold text-gray-900 dark:text-white break-words">
+                                    {{ studentRequest?.course }} -
+                                    {{ studentRequest?.year }}
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <!-- ============================= -->
+                        <!-- STATUS -->
+                        <!-- ============================= -->
+                        <div
+                            class="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+
+                            <!-- Approved Icon -->
+                            <div v-if="studentRequest?.status === 'Approved'"
+                                class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            <!-- Pending Icon -->
+                            <div v-else-if="studentRequest?.status === 'Pending'"
+                                class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/40 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+
+                            <!-- Rejected Icon -->
+                            <div v-else-if="studentRequest?.status === 'Rejected'"
+                                class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+
+                            <!-- Other Icon -->
+                            <div v-else
+                                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                                </svg>
+                            </div>
+
+                            <!-- Status Text -->
+                            <div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    Status
+                                </p>
+
+                                <!-- Approved -->
+                                <span v-if="studentRequest?.status === 'Approved'"
+                                    class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400">
+                                    Approved
+                                </span>
+
+                                <!-- Pending -->
+                                <span v-else-if="studentRequest?.status === 'Pending'"
+                                    class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400">
+                                    Pending
+                                </span>
+
+                                <!-- Rejected -->
+                                <span v-else-if="studentRequest?.status === 'Rejected'"
+                                    class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400">
+                                    Rejected
+                                </span>
+
+                                <!-- Other -->
+                                <span v-else
+                                    class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                    {{ studentRequest?.status }}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                
+
+                </div>
+
+                <!-- ============================= -->
+                <!-- SIGNATURE -->
+                <!-- ============================= -->
+                <div class="border-t border-gray-200 dark:border-gray-700 mt-5 pt-5">
+
+                    <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                        Signature
+                    </h3>
+
+                    <div
+                        class="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-center min-h-[120px] transition-colors duration-300">
+                        <img :src="studentRequest.signature ? '/storage/' + studentRequest.signature : LogoImage"
+                            alt="Student Signature" class="max-h-24 max-w-full object-contain" />
+                    </div>
+                </div>
+
+                <!-- ============================= -->
+                <!-- DELETE BUTTON -->
+                <!-- ============================= -->
+                <div class="border-t border-gray-200 dark:border-gray-700 mt-5 pt-5">
+
+                    <!-- If Student ID is already printed -->
+                    <div v-if="studentRequest.print_status === 'Printed'"
+                        class="w-full sm:w-auto inline-flex px-6 py-2.5 rounded-lg bg-green-600 dark:bg-green-700 text-white font-semibold text-sm shadow-sm">
+                        <div class="flex items-center justify-center gap-2">
+
+                            <!-- Check Icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+
+                            <span>Printed</span>
+                        </div>
+                    </div>
+
+                    <!-- If Student ID is NOT printed -->
+                    <button v-else type="button" @click="showDeleteModal(studentRequest.id)"
+                        class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 active:bg-red-800 dark:bg-red-700 dark:hover:bg-red-800 text-white font-semibold text-sm transition duration-200 shadow-sm hover:shadow-md">
+                        <div class="flex items-center justify-center gap-2">
+
+                            <!-- Trash Icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" />
+                            </svg>
+
+                            <span>Delete Student ID</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+    </AppLayout>
+</template>
